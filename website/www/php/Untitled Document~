@@ -1,0 +1,11 @@
+<?php
+
+function page_start() {
+}
+
+function page_end() {
+
+
+}
+
+?>

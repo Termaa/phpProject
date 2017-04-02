@@ -1,0 +1,60 @@
+<?php
+	require_once $_SERVER['DOCUMENT_ROOT'] . '../php/DBConnec.php';
+echo 'TEST';
+	
+
+	$pdo = DBConnec::getConnec()->getPdo();
+
+	var_dump($pdo);
+	
+	
+	if (empty($_POST['surname']) || empty($_POST['name']) || empty($_POST['nickname']) || empty($_POST['birthday']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['cpassword']))
+		echo 'Please fill all the fields';
+	else if ($_POST['password'] != $_POST['cpassword'])
+		echo 'The two passwords doesn\'t match';
+	else {
+		$sql = 'SELECT * FROM USER WHERE NICKNAME = :nickname';
+        $stmt = $pdo->prepare($sql); 
+        $stmt->bindValue('nickname', $_POST['nickname'], PDO::PARAM_STR); 
+
+		try
+        {
+            $stmt->execute(); 
+            if($stmt->rowCount() != 0) {
+				$sql = 'INSERT INTO USER (ID, name, surname, nickname, birthday, email, password)
+                  VALUES (NULL, :name, :surname, :nickname, :birthday, :email, :birthday, :password)';
+				$stmt = $pdo->prepare($sql);
+				$stmt->bindValue('name', $_POST['name'], PDO::PARAM_STR);
+				$stmt->bindValue('surname', $_POST['surname'], PDO::PARAM_STR);
+				$stmt->bindValue('nickname', $_POST['nickname'], PDO::PARAM_STR);
+				$stmt->bindValue('birthday', $_POST['birthday'], PDO::PARAM_STR); 
+				$stmt->bindValue('password', $_POST['password'], PDO::PARAM_STR);
+				$stmt->bindValue('email', $POST['email'], PDO::PARAM_STR); 
+				try
+				{
+				    $stmt->execute(); // Exécution de la requête.
+				}
+				catch (PDOException $e)
+				{
+				    // Affichage de l'erreur et rappel de la requête.
+				    echo 'Erreur : ', $e->getMessage(), PHP_EOL;
+				    echo 'Requête : ', $sql, PHP_EOL;
+				    exit();
+				}
+			}                
+           	else
+				echo 'Sorry, this nickname already exists...';
+        }
+        catch (PDOException $e)
+        {
+         
+            echo 'Erreur : ', $e->getMessage(), PHP_EOL;
+            echo 'Requête : ', $pseudo, PHP_EOL;
+            exit();
+        }
+	}
+		
+
+	
+
+?>
